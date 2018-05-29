@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MelonsService.java
- * Date:    18-5-29 下午2:57
+ * Date:    18-5-29 下午3:17
  * Author: krun
  */
 
@@ -55,7 +55,7 @@ public interface MelonsService<T, ID, R extends MelonsRepository<T, ID>> {
 	 * @return 符合条件的实体
 	 */
 	default T findOneOrThrow(Specification<T> specification) {
-		return getRepository().findOne(specification)
+		return findOne(specification)
 		                      .orElseThrow(() -> new EntityNotFoundException("找不到实体: " + JSONObject.toJSONString(specification)));
 	}
 
@@ -65,7 +65,7 @@ public interface MelonsService<T, ID, R extends MelonsRepository<T, ID>> {
 	 * @return 符合条件的实体
 	 */
 	default T findByIdOrThrow(ID id) {
-		return getRepository().findById(id).orElseThrow(() -> new EntityNotFoundException("找不到实体: id: " + id));
+		return findById(id).orElseThrow(() -> new EntityNotFoundException("找不到实体: id: " + id));
 	}
 
 	/**

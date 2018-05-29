@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MelonsItemDescriptionService.java
- * Date:    18-5-29 下午3:12
+ * Date:    18-5-29 下午3:17
  * Author: krun
  */
 
@@ -40,7 +40,7 @@ public interface MelonsItemDescriptionService<T extends ItemDescriptionFields, R
 	 * @return 符合条件的实体
 	 */
 	default T findByNameOrThrow(String name) {
-		return getRepository().findByName(name).orElseThrow(() -> new EntityNotFoundException("找不到实体: name: " + name));
+		return findByName(name).orElseThrow(() -> new EntityNotFoundException("找不到实体: name: " + name));
 	}
 
 	/**
@@ -59,7 +59,7 @@ public interface MelonsItemDescriptionService<T extends ItemDescriptionFields, R
 	 * @return 符合条件的实体
 	 */
 	default T findByNameAndEnableOrThrow(String name, Boolean enable) {
-		return getRepository().findByNameAndEnable(name, enable)
+		return findByNameAndEnable(name, enable)
 		                      .orElseThrow(() -> new EntityNotFoundException("找不到实体: name: " + name + ", enable: " + enable));
 	}
 }
