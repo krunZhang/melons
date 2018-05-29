@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      DepartmentEntity.java
- * Date:    18-5-29 上午11:19
+ * Date:    18-5-29 下午5:58
  * Author: krun
  */
 
@@ -24,7 +24,7 @@ import java.util.List;
  * @author krun
  * @date 2018/05/29
  */
-@Entity
+@Entity(name = "department")
 @Getter
 @Setter
 public class DepartmentEntity extends ItemDescriptionFields {

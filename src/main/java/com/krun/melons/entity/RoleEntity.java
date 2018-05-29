@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      RoleEntity.java
- * Date:    18-5-29 上午11:19
+ * Date:    18-5-29 下午5:58
  * Author: krun
  */
 
@@ -14,6 +14,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToMany;
 import java.util.List;
 
 /**
@@ -22,11 +24,12 @@ import java.util.List;
  * @author krun
  * @date 2018/05/29
  */
-@Entity
+@Entity(name = "role")
 @Getter
 @Setter
 public class RoleEntity extends ItemDescriptionFields {
 
+	@ManyToMany(fetch = FetchType.LAZY)
 	private List<PermissionEntity> permissions;
 
 	@Override
