@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      UUIDField.java
- * Date:    18-5-29 上午10:30
+ * Date:    18-5-29 上午10:41
  * Author: krun
  */
 
@@ -36,7 +36,7 @@ public class UUIDField {
 	@Override
 	public boolean equals (Object obj) {
 		if (obj instanceof UUIDField) {
-			return id.equals(((UUIDField) obj).getId());
+			return (id != null && id.equals(((UUIDField) obj).getId()));
 		}
 		return super.equals(obj);
 	}

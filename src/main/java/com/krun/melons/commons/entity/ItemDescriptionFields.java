@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      ItemDescriptionFields.java
- * Date:    18-5-29 上午10:30
+ * Date:    18-5-29 上午10:41
  * Author: krun
  */
 
@@ -36,8 +36,8 @@ public class ItemDescriptionFields extends EnableField {
 	public boolean equals (Object obj) {
 		if (obj instanceof ItemDescriptionFields) {
 			return super.equals(obj)
-					&& name.equals(((ItemDescriptionFields) obj).getName())
-					&& description.equals(((ItemDescriptionFields) obj).getDescription());
+					&& (name != null && name.equals(((ItemDescriptionFields) obj).getName()))
+					&& (description != null && description.equals(((ItemDescriptionFields) obj).getDescription()));
 		}
 		return super.equals(obj);
 	}
