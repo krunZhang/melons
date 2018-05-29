@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MooseGlobalIntercept.java
- * Date:    18-5-29 下午6:10
+ * Date:    18-5-29 下午6:11
  * Author: krun
  */
 
@@ -24,6 +24,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 全局拦截器
+ *
+ * @author krun
+ * @date 2018/05/29
+ */
 @ControllerAdvice
 public class MooseGlobalIntercept {
 
