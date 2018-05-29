@@ -2,12 +2,13 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      UserEntity.java
- * Date:    18-5-29 上午11:19
+ * Date:    18-5-29 上午11:52
  * Author: krun
  */
 
 package com.krun.melons.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.krun.melons.commons.Commons;
 import com.krun.melons.commons.entity.EnableField;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class UserEntity extends EnableField {
 	private String username;
 
 	@Column(nullable = false)
+	@JsonIgnore
 	private String password;
 
 	@ManyToMany(fetch = FetchType.LAZY)
