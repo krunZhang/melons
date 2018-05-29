@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MelonsService.java
- * Date:    18-5-29 下午3:17
+ * Date:    18-5-29 下午3:47
  * Author: krun
  */
 
@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -85,6 +86,23 @@ public interface MelonsService<T, ID, R extends MelonsRepository<T, ID>> {
 	 */
 	default Page<T> findAll(Specification<T> specification, Pageable pageable) {
 		return getRepository().findAll(specification, pageable);
+	}
+
+	/**
+	 * 返回所有实体
+	 * @return 所有实体
+	 */
+	default List<T> findAll() {
+		return getRepository().findAll();
+	}
+
+	/**
+	 * 返回符合条件的所有实体
+	 * @param specification 条件
+	 * @return 符合条件的所有实体
+	 */
+	default List<T> findALl(Specification<T> specification) {
+		return getRepository().findAll(specification);
 	}
 
 	/**
