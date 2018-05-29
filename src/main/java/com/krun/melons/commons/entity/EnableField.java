@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      EnableField.java
- * Date:    18-5-29 上午10:19
+ * Date:    18-5-29 上午10:30
  * Author: krun
  */
 
@@ -29,4 +29,12 @@ public class EnableField extends UUIDField {
 	@Column(name = "enable", columnDefinition = "bit(1) default 1")
 	private Boolean enable;
 
+	@Override
+	public boolean equals (Object obj) {
+		if (obj instanceof EnableField) {
+			return super.equals(obj)
+					&& enable.equals(((EnableField) obj).getEnable());
+		}
+		return super.equals(obj);
+	}
 }

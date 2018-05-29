@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      UUIDField.java
- * Date:    18-5-29 上午10:19
+ * Date:    18-5-29 上午10:30
  * Author: krun
  */
 
@@ -33,4 +33,11 @@ public class UUIDField {
 	@GeneratedValue(generator = "uuid")
 	private String id;
 
+	@Override
+	public boolean equals (Object obj) {
+		if (obj instanceof UUIDField) {
+			return id.equals(((UUIDField) obj).getId());
+		}
+		return super.equals(obj);
+	}
 }
