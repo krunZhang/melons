@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      PermissionService.java
- * Date:    18-5-29 下午4:17
+ * Date:    18-5-29 下午4:33
  * Author: krun
  */
 
@@ -12,14 +12,9 @@ import com.krun.melons.commons.exception.EntityNotFoundException;
 import com.krun.melons.commons.service.MelonsItemDescriptionService;
 import com.krun.melons.entity.PermissionEntity;
 import com.krun.melons.repository.PermissionRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * 权限服务接口
@@ -28,44 +23,6 @@ import java.util.function.Function;
  * @date 2018/05/29
  */
 public interface PermissionService extends MelonsItemDescriptionService<PermissionEntity, PermissionRepository> {
-
-	/**
-	 * 设置查询条件为 permission.enable = ${enable}
-	 */
-	Function<Boolean, Specification<PermissionEntity>> ENABLE_SPECIFICATION = enable ->
-			(root, query, cb) -> cb.equal(root.get("enable").as(Boolean.class), enable);
-
-	/**
-	 * 查询所有启用的权限
-	 * @return 启用的所有权限
-	 */
-	default List<PermissionEntity> findAllEnable () {
-		return getRepository().findAll(ENABLE_SPECIFICATION.apply(true));
-	}
-
-	/**
-	 * 查询所有禁用的权限
-	 * @return 禁用的所有权限
-	 */
-	default List<PermissionEntity> findAllNotEnable() {
-		return getRepository().findAll(ENABLE_SPECIFICATION.apply(false));
-	}
-
-	/**
-	 * 查询所有启用的权限
-	 * @return 启用的所有权限
-	 */
-	default Page<PermissionEntity> findAllEnable (Pageable pageable) {
-		return findAll(ENABLE_SPECIFICATION.apply(true), pageable);
-	}
-
-	/**
-	 * 分页查询所有禁用的权限
-	 * @return 禁用的所有权限
-	 */
-	default Page<PermissionEntity> findAllNotEnable(Pageable pageable) {
-		return findAll(ENABLE_SPECIFICATION.apply(false), pageable);
-	}
 
 	/**
 	 * 根据 uri 和请求方式查找权限实体。
