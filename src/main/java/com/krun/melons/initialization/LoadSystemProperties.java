@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      LoadSystemProperties.java
- * Date:    18-5-30 上午9:24
+ * Date:    18-5-30 上午9:36
  * Author: krun
  */
 
@@ -40,7 +40,7 @@ public class LoadSystemProperties implements CommandLineRunner {
 		managerPassword.setKey(systemProperties.getManagerPasswordKey());
 		managerPassword.setValue(systemProperties.getManagerPasswordValue());
 
-		propertyService.findByKeyOrDefault(systemProperties.getManagerUsernameKey(), managerUsername);
-		propertyService.findByKeyOrDefault(systemProperties.getManagerPasswordKey(), managerPassword);
+		propertyService.findByKeyOrDefault(managerUsername.getKey(), managerUsername);
+		propertyService.findByKeyOrDefault(managerPassword.getKey(), managerPassword);
 	}
 }

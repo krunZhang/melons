@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      PropertyService.java
- * Date:    18-5-30 上午9:24
+ * Date:    18-5-30 上午9:36
  * Author: krun
  */
 
@@ -40,6 +40,6 @@ public interface PropertyService extends MelonsItemDescriptionService<PropertyEn
 	 */
 	default PropertyEntity findByKeyOrDefault(String key, PropertyEntity property) {
 		return findByKey(key)
-				.orElse(save(property));
+				.orElseGet(() -> save(property));
 	}
 }
