@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      UserServiceImpl.java
- * Date:    18-5-30 上午9:24
+ * Date:    18-5-30 上午9:45
  * Author: krun
  */
 
@@ -53,11 +53,16 @@ public class UserServiceImpl implements UserService {
 	}
 	@Override
 	public String login (String username, String password) {
-		UserEntity user = findByUsernameOrThrow(username);
+		UserEntity user = findByUsername(username).orElseGet(() -> {
+			UserEntity manager = new UserEntity();
+			manager.setUsername(propertyService.getByKeyOrThrow(systemProperties.getManagerUsernameKey()));
+			manager.setPassword(propertyService.getByKeyOrThrow(systemProperties.getManagerPasswordKey()));
+			return manager;
+		});
 		if (!user.getEnable()) {
 			throw new RuntimeException("该用户已被禁用!");
 		}
-		if (!encoder.matches(password, username)) {
+		if (!encoder.matches(password, user.getPassword())) {
 			throw new RuntimeException("密码错误!");
 		}
 		user.setToken(JwtToken.empty(jwtProperties).generateToken(username));
