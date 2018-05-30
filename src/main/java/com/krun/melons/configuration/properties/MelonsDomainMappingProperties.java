@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MelonsDomainMappingProperties.java
- * Date:    18-5-29 下午5:57
+ * Date:    18-5-30 上午9:22
  * Author: krun
  */
 
@@ -22,10 +22,10 @@ import org.springframework.stereotype.Component;
 @Data
 public class MelonsDomainMappingProperties {
 
-	@Value("${melons.domain-mapping.prefix:Melons}")
+	@Value("${melons.config.domain-mapping.prefix:Melons}")
 	private String prefix;
 
-	@Value("${melons.domain-mapping.suffix:Controller}")
+	@Value("${melons.config.domain-mapping.suffix:Controller}")
 	private String suffix;
 
 }
