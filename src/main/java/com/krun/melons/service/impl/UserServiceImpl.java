@@ -2,12 +2,13 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      UserServiceImpl.java
- * Date:    18-5-30 上午9:45
+ * Date:    18-5-30 上午11:53
  * Author: krun
  */
 
 package com.krun.melons.service.impl;
 
+import com.krun.melons.commons.exception.EntityNotFoundException;
 import com.krun.melons.configuration.properties.MelonsJwtProperties;
 import com.krun.melons.configuration.properties.MelonsSystemProperties;
 import com.krun.melons.core.jwt.JwtToken;
@@ -59,6 +60,9 @@ public class UserServiceImpl implements UserService {
 			manager.setPassword(propertyService.getByKeyOrThrow(systemProperties.getManagerPasswordKey()));
 			return manager;
 		});
+		if (!user.getUsername().equals(username)) {
+			throw new EntityNotFoundException("用户不存在!");
+		}
 		if (!user.getEnable()) {
 			throw new RuntimeException("该用户已被禁用!");
 		}
