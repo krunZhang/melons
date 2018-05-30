@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      EnableField.java
- * Date:    18-5-29 上午10:41
+ * Date:    18-5-30 上午9:11
  * Author: krun
  */
 
@@ -26,8 +26,8 @@ import javax.persistence.MappedSuperclass;
 @Setter
 public class EnableField extends UUIDField {
 
-	@Column(name = "enable", columnDefinition = "bit(1) default 1")
-	private Boolean enable;
+	@Column(name = "enable", columnDefinition = "bit(1) default TRUE", nullable = false)
+	private Boolean enable = true;
 
 	@Override
 	public boolean equals (Object obj) {
