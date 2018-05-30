@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      LoadSystemProperties.java
- * Date:    18-5-30 上午9:36
+ * Date:    18-5-30 上午9:45
  * Author: krun
  */
 
@@ -13,6 +13,8 @@ import com.krun.melons.entity.PropertyEntity;
 import com.krun.melons.service.PropertyService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
@@ -23,12 +25,13 @@ import org.springframework.stereotype.Component;
 public class LoadSystemProperties implements CommandLineRunner {
 
 	private MelonsSystemProperties systemProperties;
-
 	private PropertyService propertyService;
 
 	@Override
 	public void run (String... args) throws Exception {
-		PropertyEntity managerUsername = new PropertyEntity();
+		PasswordEncoder encoder         = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+		PropertyEntity  managerUsername = new PropertyEntity();
 		managerUsername.setName(systemProperties.getManagerUsernameKey());
 		managerUsername.setDescription("管理员账户对应的用户名");
 		managerUsername.setKey(systemProperties.getManagerUsernameKey());
@@ -38,7 +41,7 @@ public class LoadSystemProperties implements CommandLineRunner {
 		managerPassword.setName(systemProperties.getManagerPasswordKey());
 		managerPassword.setDescription("管理员账户的初始密码");
 		managerPassword.setKey(systemProperties.getManagerPasswordKey());
-		managerPassword.setValue(systemProperties.getManagerPasswordValue());
+		managerPassword.setValue(encoder.encode(systemProperties.getManagerPasswordValue()));
 
 		propertyService.findByKeyOrDefault(managerUsername.getKey(), managerUsername);
 		propertyService.findByKeyOrDefault(managerPassword.getKey(), managerPassword);

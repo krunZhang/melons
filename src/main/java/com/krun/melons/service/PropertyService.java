@@ -2,12 +2,13 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      PropertyService.java
- * Date:    18-5-30 上午9:36
+ * Date:    18-5-30 上午9:45
  * Author: krun
  */
 
 package com.krun.melons.service;
 
+import com.krun.melons.commons.exception.EntityNotFoundException;
 import com.krun.melons.commons.service.MelonsItemDescriptionService;
 import com.krun.melons.entity.PropertyEntity;
 import com.krun.melons.repository.PropertyRepository;
@@ -41,5 +42,15 @@ public interface PropertyService extends MelonsItemDescriptionService<PropertyEn
 	default PropertyEntity findByKeyOrDefault(String key, PropertyEntity property) {
 		return findByKey(key)
 				.orElseGet(() -> save(property));
+	}
+
+	/**
+	 * 直接获取 key 对应属性的值
+	 * @param key 待查询的属性 key
+	 * @return 属性值
+	 */
+	default String getByKeyOrThrow(String key) {
+		return findByKey(key).orElseThrow(() -> new EntityNotFoundException("找不到属性: key" + key))
+				.getValue();
 	}
 }
