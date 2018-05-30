@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      Commons.java
- * Date:    18-5-30 上午9:45
+ * Date:    18-5-30 下午2:38
  * Author: krun
  */
 
@@ -20,6 +20,7 @@ import java.util.function.Predicate;
 public class Commons {
 
 	public static final Predicate<List> IS_LIST_EMPTY = list -> list == null || list.size() == 0;
+	public static final Predicate<String> IS_STRING_EMPTY = str -> str == null || str.isEmpty();
 
 	@SuppressWarnings("unchecked")
 	public static <K, V> HashMap<K, V> ofMap(Object ...objects) {

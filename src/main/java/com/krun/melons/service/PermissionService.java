@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      PermissionService.java
- * Date:    18-5-29 下午4:33
+ * Date:    18-5-30 下午2:38
  * Author: krun
  */
 
@@ -73,4 +73,6 @@ public interface PermissionService extends MelonsItemDescriptionService<Permissi
 	default PermissionEntity findByUriAndMethodAndEnableOrThrow (String uri, RequestMethod method, Boolean enable) {
 		return findByUriAndMethodAndEnable(uri, method, enable).orElseThrow(() -> new EntityNotFoundException("找不到权限: uri: " + uri + ", method: " + method.name()));
 	}
+
+
 }
