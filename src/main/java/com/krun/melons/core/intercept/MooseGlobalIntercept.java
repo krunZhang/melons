@@ -2,14 +2,19 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MooseGlobalIntercept.java
- * Date:    18-5-29 下午6:11
+ * Date:    18-5-30 上午9:23
  * Author: krun
  */
 
 package com.krun.melons.core.intercept;
 
+import com.krun.melons.commons.exception.ForbiddenException;
+import com.krun.melons.commons.exception.TokenExpiredException;
 import com.krun.melons.commons.payload.ResponseData;
+import com.krun.melons.configuration.properties.MelonsJwtProperties;
+import com.krun.melons.core.jwt.JwtToken;
 import com.krun.melons.entity.PermissionEntity;
+import com.krun.melons.entity.UserEntity;
 import com.krun.melons.service.PermissionService;
 import com.krun.melons.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 全局拦截器
@@ -36,16 +42,16 @@ public class MooseGlobalIntercept {
 	@Autowired
 	private RequestMappingHandlerMapping handlerMapping;
 
-	private PermissionService permissionService;
-	private UserService       userService;
-//	private JwtConfiguration  jwtConfiguration;
+	private PermissionService   permissionService;
+	private UserService         userService;
+	private MelonsJwtProperties jwtConfiguration;
 
 	private Map<RequestMappingInfo, HandlerMethod> handlerMethodMap;
 
-	public MooseGlobalIntercept (PermissionService permissionService, UserService userService) {
+	public MooseGlobalIntercept (PermissionService permissionService, UserService userService, MelonsJwtProperties jwtConfiguration) {
 		this.permissionService = permissionService;
 		this.userService = userService;
-//		this.jwtConfiguration = jwtConfiguration;
+		this.jwtConfiguration = jwtConfiguration;
 	}
 
 
@@ -59,32 +65,38 @@ public class MooseGlobalIntercept {
 	 * 扫描路由映射，注册权限单元
 	 */
 	private void scanHandlerMethods () {
+		Set<String> patterns;
+		Set<RequestMethod> methods;
 		for (Map.Entry<RequestMappingInfo, HandlerMethod> entry : handlerMethodMap.entrySet()) {
 			RequestMappingInfo info    = entry.getKey();
 			HandlerMethod      handler = entry.getValue();
+			patterns = info.getPatternsCondition().getPatterns();
+			methods = info.getMethodsCondition().getMethods();
 
-			info.getPatternsCondition()
-			    .getPatterns()
-			    .forEach(pattern -> info.getMethodsCondition()
-			                            .getMethods()
-			                            .forEach(method -> {
-				                            if (permissionService.findByUriAndMethod(pattern, method)
-				                                                 .isPresent()) {
-					                            return;
-				                            }
-				                            PermissionEntity permission = new PermissionEntity();
-				                            permission.setName(handler.getBeanType()
-				                                                      .getSimpleName() + "_" + handler.getMethod()
-				                                                                                      .getName());
-				                            permission.setUri(pattern);
-				                            permission.setMethod(method);
-				                            permission.setIntercept(false);
-				                            permission.setEnable(true);
-				                            permissionService.save(permission);
-				                            System.out.println(String.format("Register permission: { %s }",
-				                                                             permission.toString()));
-			                            }));
+			for (String  pattern : patterns) {
+				for (RequestMethod method : methods) {
+					registerPermission(pattern, method, handler);
+				}
+			}
 		}
+	}
+
+	private void registerPermission(String pattern, RequestMethod method, HandlerMethod handler) {
+		if (permissionService.findByUriAndMethod(pattern, method)
+		                     .isPresent()) {
+			return;
+		}
+		PermissionEntity permission = new PermissionEntity();
+		permission.setName(handler.getBeanType()
+		                          .getSimpleName() + "_" + handler.getMethod()
+		                                                          .getName());
+		permission.setUri(pattern);
+		permission.setMethod(method);
+		permission.setIntercept(false);
+		permission.setEnable(true);
+		permissionService.save(permission);
+		System.out.println(String.format("Register permission: { %s }",
+		                                 permission.toString()));
 	}
 
 	@ResponseStatus (HttpStatus.OK)
@@ -119,27 +131,29 @@ public class MooseGlobalIntercept {
 			return;
 		}
 
-//		/* 解析 token */
-//		JwtToken jwtToken = JwtToken.fromRequest(request, jwtConfiguration);
-//
-//		if (jwtToken.isTokenExpired()) {
-//			throw new RuntimeException("Token 已过期!");
-//		}
-//
-//		String username = jwtToken.getUsername();
-//
-//		User user = userService.findByUsername(username);
-//		if (! user.hasPermission(permission)) {
-//			throw new RuntimeException(String.format("无权限访问 {url: '%s', method: %s}", request.getRequestURI(), method));
-//		}
+		/* 解析 token */
+		JwtToken jwtToken = JwtToken.fromRequest(request, jwtConfiguration);
 
-//		System.out.println(
-//				String.format("Access: { user: '%s', pattern: '%s', uri: '%s', method: '%s', permission: '%s'}",
-//				              username, pattern, request.getRequestURI(), method, permission.getName()));
+		if (jwtToken.isTokenExpired()) {
+			throw new TokenExpiredException();
+		}
+
+		String username = jwtToken.getUsername();
+		UserEntity user = userService.findByUsernameOrThrow(username);
+
+		if (userService.isManager(user)) {
+			System.out.println(
+					String.format("Access: { user: '%s', pattern: '%s', uri: '%s', method: '%s', role: '%s'}",
+					              username, pattern, request.getRequestURI(), method, "Manager"));
+			return;
+		}
+		if (! user.hasPermission(permission)) {
+			throw new ForbiddenException(String.format("无权限访问 {url: '%s', method: %s}", request.getRequestURI(), method));
+		}
 
 		System.out.println(
-				String.format("Access: { pattern: '%s', uri: '%s', method: '%s', permission: '%s'}",
-						             pattern, request.getRequestURI(), method, permission.getName()));
+				String.format("Access: { user: '%s', pattern: '%s', uri: '%s', method: '%s', permission: '%s'}",
+				              username, pattern, request.getRequestURI(), method, permission.getName()));
 
 	}
 
