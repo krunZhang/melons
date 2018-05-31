@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MelonsPermissionsController.java
- * Date:    18-5-31 上午9:10
+ * Date:    18-5-31 上午9:22
  * Author: krun
  */
 
@@ -40,9 +40,7 @@ public class MelonsPermissionsController extends MelonsController {
 		if (payload == null) {
 			page = permissionService.findAll(pageable);
 		} else {
-			page = payload.getEnable() ?
-			       permissionService.findAllEnable(pageable) :
-			       permissionService.findAllNotEnable(pageable);
+			page = permissionService.findAll(payload, pageable);
 		}
 		return ResponseData.<Page<PermissionEntity>>ok().data(page).build();
 	}
