@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MooseGlobalIntercept.java
- * Date:    18-5-30 上午9:23
+ * Date:    18-5-31 上午9:10
  * Author: krun
  */
 
@@ -13,8 +13,10 @@ import com.krun.melons.commons.exception.TokenExpiredException;
 import com.krun.melons.commons.payload.ResponseData;
 import com.krun.melons.configuration.properties.MelonsJwtProperties;
 import com.krun.melons.core.jwt.JwtToken;
+import com.krun.melons.entity.LogEntity;
 import com.krun.melons.entity.PermissionEntity;
 import com.krun.melons.entity.UserEntity;
+import com.krun.melons.service.LogService;
 import com.krun.melons.service.PermissionService;
 import com.krun.melons.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,13 +49,16 @@ public class MooseGlobalIntercept {
 	private PermissionService   permissionService;
 	private UserService         userService;
 	private MelonsJwtProperties jwtConfiguration;
+	private LogService          logService;
 
 	private Map<RequestMappingInfo, HandlerMethod> handlerMethodMap;
 
-	public MooseGlobalIntercept (PermissionService permissionService, UserService userService, MelonsJwtProperties jwtConfiguration) {
+	public MooseGlobalIntercept (PermissionService permissionService, UserService userService,
+	                             MelonsJwtProperties jwtConfiguration, LogService logService) {
 		this.permissionService = permissionService;
 		this.userService = userService;
 		this.jwtConfiguration = jwtConfiguration;
+		this.logService = logService;
 	}
 
 
@@ -114,20 +121,19 @@ public class MooseGlobalIntercept {
 	public void preHandleRequest (HttpServletRequest request) {
 
 		/* 找出匹配的pattern*/
-		String pattern = match(request);
-		String method  = request.getMethod();
+		String    pattern = match(request);
+		String    method  = request.getMethod();
+
+
 
 		/* 检查是否需要拦截 */
 		PermissionEntity permission = permissionService.findByUriAndMethodOrThrow(pattern, RequestMethod.valueOf(method));
+
 
 		if (! permission.getEnable()) {
 			throw new RuntimeException("此接口暂时关闭!");
 		}
 		if (! permission.getIntercept()) {
-			/* 不拦截 */
-			System.out.println(
-					String.format("此接口不拦截: {pattern: '%s', uri: '%s', method: '%s'}", pattern, request.getRequestURI(),
-					              method));
 			return;
 		}
 
@@ -141,19 +147,29 @@ public class MooseGlobalIntercept {
 		String username = jwtToken.getUsername();
 		UserEntity user = userService.findByUsernameOrThrow(username);
 
+		LogEntity log     = new LogEntity();
+		log.setUrl(request.getRequestURL().toString());
+		log.setTime(Timestamp.from(Calendar.getInstance().toInstant()));
+		log.setIp(request.getRemoteAddr());
+		log.setPermission(permission);
+		log.setUser(user);
+		logService.save(log);
+
 		if (userService.isManager(user)) {
-			System.out.println(
-					String.format("Access: { user: '%s', pattern: '%s', uri: '%s', method: '%s', role: '%s'}",
-					              username, pattern, request.getRequestURI(), method, "Manager"));
+			log.setNotes("管理员权限");
+			log.setAccess(true);
+			logService.save(log);
 			return;
 		}
 		if (! user.hasPermission(permission)) {
+			log.setNotes("无权限访问");
+			log.setAccess(false);
+			logService.save(log);
 			throw new ForbiddenException(String.format("无权限访问 {url: '%s', method: %s}", request.getRequestURI(), method));
 		}
 
-		System.out.println(
-				String.format("Access: { user: '%s', pattern: '%s', uri: '%s', method: '%s', permission: '%s'}",
-				              username, pattern, request.getRequestURI(), method, permission.getName()));
+		log.setAccess(true);
+		logService.save(log);
 
 	}
 

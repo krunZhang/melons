@@ -2,7 +2,7 @@
  * Copyright © 2018 krun, All Rights Reserved.
  * Project: melons
  * File:      MelonsPermissionsController.java
- * Date:    18-5-30 下午2:38
+ * Date:    18-5-31 上午9:10
  * Author: krun
  */
 
@@ -36,8 +36,6 @@ public class MelonsPermissionsController extends MelonsController {
 	@GetMapping("")
 	public ResponseData<Page<PermissionEntity>> list(@PageableDefault Pageable pageable,
 	                                                 PermissionsSpecificationPayload payload) {
-		System.out.println(pageable.getPageNumber());
-		System.out.println(pageable.getPageSize());
 		Page<PermissionEntity> page;
 		if (payload == null) {
 			page = permissionService.findAll(pageable);
